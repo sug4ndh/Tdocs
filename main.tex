@@ -1,0 +1,261 @@
+% Author:
+% Sugandh Sinha, sugandh@kth.se
+%
+% Template created using the online editor overleaf.com
+
+\documentclass[12pt]{article}
+
+% This is the preamble, load any packages you're going to use here
+\usepackage{enumerate} % allows us to customize our lists
+\usepackage{pgfgantt} % for gantt chart
+\usepackage{geometry} % to change margins
+\usepackage{ragged2e} % provides \RaggedLeft
+\usepackage{hyperref} % provides \href
+\usepackage{color}
+\usepackage{soul}
+
+\begin{document}
+
+\title{Degree Project : Specification and schedule
+}
+\author{Sugandh Sinha, sugandh@kth.se}
+%\date{\today}
+\date{}
+
+\maketitle
+%\section{Formalities}
+%\begin{itemize}
+\textbf{Preliminary title}: {\color{black}Adaptive personalization of e-learning curricula using deep reinforcement learning}\\
+
+\textbf{CSC Supervisor}: Pawel Herman (pherman@kth.se)\\
+
+\textbf{Principal}: Sana Labs\\
+
+\textbf{Supervisor at principal's workplace}: Anton Osika (anton@sanalabs.com)\\
+%\end{itemize}
+
+\section{Background \& Objective}
+%\subsection*{Description of the area within which the degree project is being carried out}
+%E.g. connection to research/development, state-of-the-art, scientific and/or societal interest.
+%\subsection*{The principal's interest} 
+%The background of the specific assignment to be conducted.
+%\subsection*{Objective} 
+%What is the desired outcome (from the principal's side and from the perspective of the degree project)
+Research since the $19^{th}$ century has shown that spacing repetition of study material with delays between reviews has a positive impact on the duration over which the material can be recalled {\color{blue}\cite{ebbi, space_rep}}. Different ways for performing this spacing have been argued for and investigated -  the preferable method for deciding on the spacing scheme is however to empirically learn the optimal spacing scheme.\\
+
+This could be done in an e-learning environment where an agent/model is in charge of scheduling and presenting learning materials to students. Since every student might possess a different learning capability, the agent/model should preferably be able to infer the learning pattern for each student to be able to present learning material effectively. The term ‘effectively’ is used to denote how many times and when the material should be presented again, as spaced practice has shown to reduce this number.\\
+
+Most of the previous work in the knowledge tracing domain has been about predicting whether the question that the agent/model is going to present will be answered correctly or not by the student \cite{dkt} but {\color{blue}without} paying much heed to the importance of the order of the questions. {\color{blue} In this work we will examine whether presenting the questions in a specific sequence different from random ordering can enhance the effectiveness of students' learning.}\\
+
+As an example, one of the most {\color{blue}commonly} used method{\color{blue}s} in flashcards for spaced repetition is Leitner System \cite{leitner}. The basic idea behind this technique is to make users interact more with items that they are likely to forget and let them spend less time on items that they are able to recall efficiently. This system maintains a set of {\color{blue}n }decks. When the user sees an item for the first time then that item is placed in deck 1. Afterwards, when the user sees an item placed in deck i and recalls it correctly, the item is moved to the bottom of deck  i+1. However, if the user answers incorrectly then it is moved to the bottom of deck i-1. {\color{blue}Leitner systems make users spend more time on lower decks so that they can recall items that they are frequently forgetting}. {\color{blue}Reddy et al. \cite{leitner_reddy}} use a Queue based Leitner system to generate a mathematical model for spaced repetition system.\\
+
+This thesis work finds it inspirations {\color{blue}and} has its applications in the areas of machine learning, e-learning, educational data mining and online education.\\
+
+The thesis work will be done at Sana Labs, Stockholm. This work is relevant for Sana Labs as {\color{blue}the company uses} machine learning to predict student user/student behaviour for optimizing learning experiences. Literature on the subject and present work at Sana Labs, typically involves manually deciding criteria for what content to show, when and to which users. This {\color{blue}work will explore opportunities for} replacing the manually selected criteria with an end-to-end recommendation system that learns the criteria by itself.\\
+
+The goal of this project work is to develop a proof-of-concept for a reinforcement learning-based approach to the problem of spacing the review of learning material in a student simulator with emphasis on data efficiency of the learning algorithm.
+
+
+\section{Research Question \& Method}
+\subsection{Research question}
+In previous work Reddy et al. \cite{reddy} investigated a model-free review scheduling algorithm for spaced repetition systems{\color{blue},} which learns its policy using the observations made on student’s study history without actually learning a student model. This thesis work will be focused on finding out how data efficient a reinforcement learning algorithm can be when compared to previously published heuristics like \cite{leitner} when it comes to making spaced repetition and making students learn. {\color{blue}Being data efficient, here, refers to learning good policies with less student interaction data}. The work done by Reddy et al. \cite{reddy} relies on number of iterations to compare performance but this thesis work will be concerned with using number of questions as a measure for performance comparison. \\
+
+{\color{blue}
+The research questions that the project seeks to answer are\\
+
+\begin{itemize}
+\item
+\textit{How does reinforcement learning perform when we replace one of the reward functions which maximizes the likelihood of recalling all items used by Reddy et al. \cite{reddy} to a realistically observable reward such as sum of correct outcomes?}
+\item
+\textit{How does reinforcement learning perform when we replace the same reward function with an RNN model that predicts the reward?}
+\end{itemize}
+}
+{\color{blue}Key Challenges in the project are:}
+\begin{itemize}
+    \item It is really hard to model a human learning model that has all the characteristics of a typical student and as such is well beyond our scope.
+    \item reinforcement learning needs lots of data.
+    \item Formulation of a good reward function for an agent.
+    \item Deciding on how to induce variance in the simulated student population.
+\end{itemize}
+
+\subsection{Method}
+
+We will have the following three simulators that will act as students/human learning models, each having its own learning and retaining characteristics:
+\vspace{5mm}
+\newline
+\textbf{Exponential forgetting curve:}
+\newline
+{\color{blue}Ebbinghaus's \cite{ebbi}}classic study on forgetting learned materials states that when a person learns something new, most of it is forgotten in an exponential rate within the first couple of days and after that the rate of loss gradually becomes weaker.
+\newline
+{\color{blue}Reddy et al. \cite{leitner_reddy} give} the probability of recalling an item as \\
+
+\begin{equation} \label{eq:efc}
+P[recall] = exp (-\theta \cdot d/s),\\
+\end{equation}
+
+where $\theta$ is the item difficulty, d is the time elapsed since the material was last reviewed and s is the memory strength.
+\vspace{5mm}
+\newline
+\textbf{Half life regression:}
+\newline
+{\color{blue}
+As described by Settles and Meeder \cite{duolingo}, the memory decays exponentially over time:
+\begin{equation} \label{eq:hlrp}
+p = 2^{\Delta/h}, \\
+\end{equation}
+In this equation, p denotes the probability of correctly
+recalling an item (e.g., a word), which is
+a function of $\Delta$, the lag time since the item was
+last practiced, and h, the half-life or measure of
+strength in the learner’s long-term memory.
+\newline
+When $\Delta$ = h, the lag time is equal to the half-life,
+so $p = 2^{-1} = 0.5$, and the student is on the
+verge of being unable to remember.
+\newline
+Assuming that the half-life should increase exponentially
+with each repeated exposure. The estimated half life
+$\hat{h}_\Theta$ is given by
+\begin{equation} \label{eq:hlrh}
+\hat{h}_\Theta = 2^{\Theta·x}, \\
+\end{equation}
+where $x$ is a feature vector that describes the study history for the student-item pair and the vector $\Theta$ contain weights that correspond to each feature variable in $x$.
+}
+\vspace{5mm}
+\newline
+\textbf{Generalized power law:}
+\newline
+Wixted and Carpenter \cite{power_law} state that the probability of recalling decays according to a generalized power law as a function of t.
+\begin{equation} \label{eq:gpl}
+P[recall] = \lambda(1+\beta.t)^{-\Psi}, 
+\end{equation}
+ where {\color{blue}t is the retention interval}, $\lambda$ is a constant representing the degree of initial learning, $\beta$ is a scaling factor on time $(h>0)$ and $\Psi$ represents the rate of forgetting.\\
+
+From each of these student simulators, we will generate interaction histories for students that will act as our data. The initial step in this thesis work would be to set up the student simulators and potentially adding logic to these simulators so that they resemble real students more closely. {\color{blue}For example, parameters representing particular attributes of each student, such as memory strength and learning rate, should be drawn from a distribution representing the population of different students that exist.}\\
+
+We will be using Trust Regional Policy Optimization (TRPO) reinforcement learning algorithm that will interact with the student data and update its policy and reward function. TRPO has been shown to be robust and works well with domains having high dimensional inputs {\color{blue}\cite{trpo, survey_rl}}.\\
+
+In Reddy et al.\cite{reddy} experiments, the reward for updating the agent’s policy is computed by directly accessing the recall likelihood specified by the student model, which is not possible in real situations. Instead of using recall likelihoods for reward, we will investigate how the results vary when we use the sum of observed correct outcomes as the reward.
+
+
+\subsection{Expected Scientific Results}
+Our hypothesis is that the reinforcement learning agent should be able to give a performance which is, if not better, comparable to heuristics like Leitner, Supermemo, etc.\\
+This hypothesis will be tested on the three student simulators mentioned above in the Method subsection.
+
+\section{Evaluation \& News Value}
+\subsection{Evaluation}
+The implementation of the system will be tested in a simulated environment against multiple benchmark(s) for ordering the review questions.\\
+The trained model will be tested on student simulators and will be evaluated using student recall rate based on {\color{blue}how many of the questions presented were correctly/incorrectly answered }and also how the student recall rate changes over time as the reinforcement learning algorithm learns.\\
+
+\subsection{The work's innovation/news value} 
+The innovative part of the thesis work lies in finding out the data efficiency of the reinforcement learning when applied to the problem of human learning and spaced repetition, which to the best of our knowledge has not been done before. Data efficiency, here, refers to learning good policies with less student interaction data.
+
+\section{Pre-Study}
+The literature study would be mostly focused on two areas -
+\begin{itemize}
+    \item Reinforcement learning
+    \item Human Learning, Spaced Repetition and Knowledge tracing
+\end{itemize} 
+The literature mentioned below is not an exhaustive list but this is where I will get started with the pre-study.
+
+\subsection{Reinforcement Learning}
+\begin{itemize}
+    \item Andrew G. Barto, Richard S. Sutton. Reinforcement Learning : An Introduction. The MIT Press, 2014.
+    \item Siddharth Reddy, Sergey Levine, Anca Dragan. Accelerating Human Learning with Deep Reinforcement Learning. In Conference on Neural Information Processing Systems, 2017.
+    \item Naoki Abe, Edwin Pednault, Haixun Wang, Bianca Zadrozny, Wei Fan, Chid Apte. Empirical Comparison of Various Reinforcement Learning Strategies for Sequential Targeted Marketing. In IEEE Int. Conf. Data Mining 3–10 (2002).
+    \item Matthew Hausknecht, Peter Stone. Deep Recurrent Q-Learning for Partially Observable MDPs. In Association for the Advancement of Artificial Intelligence, 2015.
+    \item Silver, D. et al. Concurrent Reinforcement Learning from Customer Interactions. In Proceedings of the 30th International Conference on Machine Learning, Atlanta, Georgia, USA, 2013. PMLR volume 28.
+    \item Xiujun Li, Lihong Li, Jianfeng Gao, Xiaodong He, Jianshu Chen, Li Deng, and Ji He. Recurrent Reinforcement Learning: A Hybrid Approach. arXiv:1509.03044, 2015.
+    \item R. McAllister and C. Rasmussen. Data-efficient reinforcement learning in continuous-state POMDPs. arXiv preprint arXiv:1602.02523, 2016.
+    \item Burr Settles, Brendan Meeder. A Trainable Spaced Repetition Model for Language Learning. In Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics, pages 1848–1858, Berlin, Germany, August 7-12, 2016. Association for Computational Linguistics.
+\end{itemize}
+\subsection{Human Learning, Spaced Repetition and Knowledge Tracing}
+\begin{itemize}
+    \item Spaced repetition. http://www.gwern.net/Spaced%20repetition, 2016.
+    \item Sean H. K. Kang. Spaced Repetition Promotes Efficient and Effective Learning: Policy Implications for Instruction. In Policy Insights from the Behavioral and Brain Sciences 2016, Vol. 3(1) 12–19.
+    \item Piech, C. et al. Deep Knowledge Tracing. In Advances in Neural Information Processing Systems, pages 505–513, 2015.
+    \item Michael C Mozer and Robert V Lindsey. Predicting and improving memory retention: Psychological theory matters in the big data era, 2016.
+    \item Christopher James Piech. Uncovering Patterns in Student Work: Machine Learning to Understand Human Learning. PhD thesis, Stanford University, 2016.
+    \item S. Reddy, I. Labutov, S. Banerjee, and T. Joachims. Unbounded human learning: Optimal scheduling for spaced repetition. In ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD), 2016.
+    \item PA Wozniak and Edward J Gorzelanczyk. Optimization of repetition spacing in the practice of learning. Acta neurobiologiae experimentalis, 54:59–59, 1994.
+    \item Siddharth Reddy, Igor Labutov, Thorsten Joachims, Learning Student and Content Embeddings for Personalized Lesson Sequence Recommendation, Work in Progress, ACM Conference on Learning at Scale (L@S), 2016.
+    \item Siddharth Reddy, Igor Labutov, Thorsten Joachims, Learning Representations of Student Knowledge and Educational Content, ICML Workshop on Machine Learning for Education, 2015.
+\end{itemize}
+
+\section{Conditions \& Schedule}
+\subsection{Limitations}
+For the thesis project, we do not plan 	on testing our {\color{blue}reinforcement learning agent in real live environment with students as we expect that it will take a lot of time.} Also, the student simulators do not model all the characteristics of a typical students. The parameters of the student simulators will not be derived from the distribution of real student data but will just be set to reasonable values.
+
+\subsection{Collaboration with the principal (external supervisor)}
+The thesis work will be done at Sana Labs, Stockholm and the supervisor at Sana Labs would be involved in all the steps of the thesis work.
+
+\subsection{Resources}
+\begin{itemize}
+\item Hardware, my laptop and a computer equipped with graphics card.
+\item Toolkits for reinforcement learning like OpenAI Gym etc., deep learning frameworks like tensorflow, keras, theano, etc.
+\item Simulated data of student interaction histories.
+\end{itemize}
+
+\newpage
+\section*{Schedule}
+
+\definecolor{softgreen}{RGB}{63,171,63}
+\definecolor{darkgreen}{RGB}{0,88,0}
+\definecolor{maybegreen}{RGB}{213,240,127}
+\definecolor{gold}{RGB}{211, 204, 103}
+\definecolor{grey}{RGB}{175,175,175}
+\definecolor{sblue}{RGB}{135,206,250}
+
+\begin{flushleft}
+\begin{tikzpicture}[x=0.5cm, y=0.8cm]
+\begin{ganttchart}[milestone label font=\tiny, group label font=\tiny,
+title label font=\tiny,
+bar label font=\tiny,
+bar label node/.style={text width=3cm,align=right,font=\scriptsize\RaggedLeft,anchor=east},
+milestone label node/.style={text width=2cm,align=right,font=\scriptsize\RaggedLeft,anchor=east},
+group label node/.style={text width=3cm,align=right,font=\scriptsize\RaggedLeft,anchor=east}
+]{1}{23}
+  \gantttitle{Preliminary schedule for Sugandh Sinha's thesis}{23} \\
+  \gantttitlelist{1,...,23}{1} \\
+  \ganttgroup[group/.append style={fill=black}]{Pre-study}{1}{5} \\
+  \ganttbar[progress=100,bar/.append style={fill=softgreen}]{Intro period at principal}{1}{1} \\
+  \ganttlinkedbar[progress=30,bar/.append style={fill=softgreen}]{Read relevant literature, finish specification}{1}{5} \ganttnewline
+  \ganttmilestone{Present pre-study results for principal}{5} 
+  \ganttlink{elem2}{elem3}\\
+  
+  \ganttgroup[group/.append style={fill=black}]{Implementation}{6}{17}\\
+  \ganttbar{Write introduction and relevant work section}{6}{8} \\
+  \ganttlink{elem3}{elem5}
+  \ganttbar{Set up the student simulators}{6}{7} \\
+  \ganttbar{Data pre-processing}{8}{10} \\
+  %\ganttbar{Train \& test model}{14}{19} \\
+  \ganttmilestone{Attend first thesis presentation}{9}\\
+  \ganttlink{elem6}{elem7}
+  %\ganttlink{elem7}{elem8}
+  
+  \ganttgroup[group/.append style={fill=sblue}]{Visiting home, working half time}{11}{12}\\
+  
+  %\ganttgroup[group/.append style={fill=black}]{Implementation}{13}{17}\\
+  \ganttbar{Model training and testing}{13}{16} \\
+  %\ganttbar{Data pre-processing}{9}{11} \\
+  \ganttbar{Write method section}{16}{17} \\
+  \ganttlink{elem10}{elem11}
+  %\ganttbar{Train \& test model}{14}{19} \\
+  \ganttmilestone{Attend second thesis presentation}{17}\\
+
+    
+  \ganttgroup[group/.append style={fill=black}]{Finalizing report / defense}{18}{23}\\
+  \ganttbar{Write discussion/conclusion}{18}{20} \\
+  \ganttbar{Prepare presentation / defense}{21}{22}\\
+  %\ganttbar[bar/.append style={fill=grey}]{Productization \& Deployment (if time permits)}{25}{26} \\
+  \ganttbar[bar/.append style={fill=gold}]{Goal week to defend thesis}{23}{23}
+  \ganttlink{elem15}{elem16}
+  \ganttnewline
+\end{ganttchart}
+\end{tikzpicture}
+\end{flushleft}
+
+\bibliographystyle{plain}
+\bibliography{specification.bib}
+
+\end{document}
