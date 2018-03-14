@@ -47,25 +47,28 @@ This could be done in an e-learning environment where an agent/model is in charg
 
 Most of the previous work in the knowledge tracing domain has been about predicting whether the question that the agent/model is going to present will be answered correctly or not by the student \cite{dkt} but {\color{blue}without} paying much heed to the importance of the order of the questions. {\color{blue} In this work we will examine whether presenting the questions in a specific sequence different from random ordering can enhance the effectiveness of students' learning.}\\
 
-As an example, one of the most {\color{blue}commonly} used method{\color{blue}s} in flashcards for spaced repetition is Leitner System \cite{leitner}. The basic idea behind this technique is to make users interact more with items that they are likely to forget and let them spend less time on items that they are able to recall efficiently. This system maintains a set of {\color{blue}n }decks. When the user sees an item for the first time then that item is placed in deck 1. Afterwards, when the user sees an item placed in deck i and recalls it correctly, the item is moved to the bottom of deck  i+1. However, if the user answers incorrectly then it is moved to the bottom of deck i-1. {\color{blue}Leitner systems make users spend more time on lower decks so that they can recall items that they are frequently forgetting}. {\color{blue}Reddy et al. \cite{leitner_reddy}} use a Queue based Leitner system to generate a mathematical model for spaced repetition system.\\
+As an example, one of the most {\color{blue}commonly} used method{\color{blue}s} in flashcards for spaced repetition is Leitner System \cite{leitner}. The basic idea behind this technique is to make users interact more with items that they are likely to forget and let them spend less time on items that they are able to recall efficiently. This system maintains a set of {\color{blue}n }decks. When the user sees an item for the first time then that item is placed in deck 1. Afterwards, when the user sees an item placed in deck i and recalls it correctly, the item is moved to the bottom of deck  i+1. However, if the user answers incorrectly then it is moved to the bottom of deck i-1. {\color{blue}Leitner systems make users spend more time on lower decks so that they can recall items that they are frequently forgetting}. 
+% This should probably be moved somewhere else? (and you can leave it out of the specification!) {\color{blue}Reddy et al. \cite{leitner_reddy}} use a Queue based Leitner system to generate a mathematical model for spaced repetition system.\\
 
 This thesis work finds it inspirations {\color{blue}and} has its applications in the areas of machine learning, e-learning, educational data mining and online education.\\
 
-The thesis work will be done at Sana Labs, Stockholm. This work is relevant for Sana Labs as {\color{blue}the company uses} machine learning to predict student user/student behaviour for optimizing learning experiences. Literature on the subject and present work at Sana Labs, typically involves manually deciding criteria for what content to show, when and to which users. This {\color{blue}work will explore opportunities for} replacing the manually selected criteria with an end-to-end recommendation system that learns the criteria by itself.\\
+The thesis work will be done at Sana Labs, Stockholm. This work is relevant for Sana Labs as {\color{blue}the company uses} machine learning to predict student user/student behaviour for optimizing learning experiences. Literature on the subject and present work at Sana Labs, typically involves manually evaluating criteria for what content to show, when and to which users. This {\color{blue}work will explore opportunities for} replacing the manually selected criteria with an end-to-end recommendation system that learns the criteria by itself.\\
 
 The goal of this project work is to develop a proof-of-concept for a reinforcement learning-based approach to the problem of spacing the review of learning material in a student simulator with emphasis on data efficiency of the learning algorithm.
 
 
 \section{Research Question \& Method}
 \subsection{Research question}
-In previous work Reddy et al. \cite{reddy} investigated a model-free review scheduling algorithm for spaced repetition systems{\color{blue},} which learns its policy using the observations made on student’s study history without actually learning a student model. This thesis work will be focused on finding out how data efficient a reinforcement learning algorithm can be when compared to previously published heuristics like \cite{leitner} when it comes to making spaced repetition and making students learn. {\color{blue}Being data efficient, here, refers to learning good policies with less student interaction data}. The work done by Reddy et al. \cite{reddy} relies on number of iterations to compare performance but this thesis work will be concerned with using number of questions as a measure for performance comparison. \\
+In previous work Reddy et al. \cite{reddy} investigated a model-free review scheduling algorithm for spaced repetition systems{\color{blue},} which learns its policy using the observations made on student’s study history without actually learning a student model. This thesis work will be focused on finding out how data efficient a reinforcement learning algorithm can be when compared to previously published heuristics like \cite{leitner} when it comes to making spaced repetition and making students learn. {\color{blue}Being data efficient, here, refers to learning good policies with less student interaction data}. 
+
+% What you are saying is that Reddy only optimizes for 'time' and not the 'amount of interactions' - but it will probably take more text to get that message through clearly and it's not very important to point it out. The work done by Reddy et al. \cite{reddy} relies on number of iterations to compare performance but this thesis work will be concerned with using number of questions as a measure for performance comparison. \\
 
 {\color{blue}
 The research questions that the project seeks to answer are\\
 
 \begin{itemize}
 \item
-\textit{How does reinforcement learning perform when we replace one of the reward functions which maximizes the likelihood of recalling all items used by Reddy et al. \cite{reddy} to a realistically observable reward such as sum of correct outcomes?}
+\textit{How does reinforcement learning perform when we replace the reward from being the exact probability of recalling each item, used by Reddy et al. \cite{reddy}, to a realistically observable reward such as the number of correct outcomes in a sample of exercises?}
 \item
 \textit{How does reinforcement learning perform when we replace the same reward function with an RNN model that predicts the reward?}
 \end{itemize}
@@ -145,7 +148,7 @@ This hypothesis will be tested on the three student simulators mentioned above i
 \section{Evaluation \& News Value}
 \subsection{Evaluation}
 The implementation of the system will be tested in a simulated environment against multiple benchmark(s) for ordering the review questions.\\
-The trained model will be tested on student simulators and will be evaluated using student recall rate based on {\color{blue}how many of the questions presented were correctly/incorrectly answered }and also how the student recall rate changes over time as the reinforcement learning algorithm learns.\\
+The trained model will be tested on student simulators and will be evaluated using student recall rate based on {\color{blue}how many of the questions presented were correctly/incorrectly answered }and also how quickly the student recall rate changes over time as the reinforcement learning algorithm learns.\\
 
 \subsection{The work's innovation/news value} 
 The innovative part of the thesis work lies in finding out the data efficiency of the reinforcement learning when applied to the problem of human learning and spaced repetition, which to the best of our knowledge has not been done before. Data efficiency, here, refers to learning good policies with less student interaction data.
