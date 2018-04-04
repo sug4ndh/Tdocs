@@ -11,11 +11,37 @@ from queue import Queue
 import numpy as np
 import gym
 from gym import spaces
-
+from matplotlib import pyplot as plt
+## %matplotlib inline
+import matplotlib as mpl
+from rllab.envs.gym_env import *
 from rllab.policies.categorical_gru_policy import CategoricalGRUPolicy
 from rllab.baselines.linear_feature_baseline import LinearFeatureBaseline
 from rllab.algos.trpo import TRPO
 from rllab.misc.overrides import overrides
+from rllab.envs.gym_env import *
+
+from newstudentmodels import DASHEnv, HLREnv, EFCEnv, sample_const_delay
+
+#from studentmodels import ThresholdTutor, LeitnerTutor
+#from studentmodels import RLTutor, LeitnerTutor, RandTutor, SuperMnemoTutor
+#from evel import get_env
+
+mpl.rc('savefig', dpi=300)
+mpl.rc('text', usetex=True)
+
+data_dir = os.path.join('.', 'data')
+
+n_steps = 200
+n_items = 30
+const_delay = 5
+discount = 0.99
+
+n_reps = 10
+n_eps = 100
+
+normalize = lambda x: x / x.sum()
+
 from rllab.envs.gym_env import *
 
 
@@ -124,6 +150,9 @@ class LeitnerTutor(Tutor):
         best_aprob = None
         for aprob in arrival_probs:
             self.arrival_prob = aprob
+            from evel import get_env
+            env = get_env()
+            #print(type(env))
             reward = np.mean(run_eps(self, env, n_eps=n_eps_per_aprob))
             if best_reward is None or reward > best_reward:
                 best_aprob = aprob
@@ -759,3 +788,6 @@ def run_ep(agent, env):
         totalr.append(r)
         observations.append(obs)
     return np.mean(totalr), observations
+
+
+
