@@ -1142,13 +1142,13 @@ for n_items in N_items:
         with open(os.path.join(data_dir, reward_file_name), 'wb') as f:
           pickle.dump(reward_logs, f, pickle.HIGHEST_PROTOCOL)
 
-        R = np.zeros((6, len(tutor_builders), n_eps, n_reps))
-        for i in range(6):
-          #with open(os.path.join(data_dir, reward_file+'.%d' % i), 'rb') as f:
-          with open(os.path.join(data_dir, reward_file_name), 'rb') as f:
-            reward_logs = pickle.load(f)
-            R[i] = reward_logs['rewards'][i]
-            print(reward_logs['env_names'], reward_logs['reward_funcs'])
+        # R = np.zeros((6, len(tutor_builders), n_eps, n_reps))
+        # for i in range(6):
+        #   #with open(os.path.join(data_dir, reward_file+'.%d' % i), 'rb') as f:
+        #   with open(os.path.join(data_dir, reward_file_name), 'rb') as f:
+        #     reward_logs = pickle.load(f)
+        #     R[i] = reward_logs['rewards'][i]
+        #     print(reward_logs['env_names'], reward_logs['reward_funcs'])
 
         for i in range(R.shape[0]):
           for j in range(R.shape[3]):
@@ -1202,5 +1202,5 @@ for n_items in N_items:
                 plt.yticks(plt.yticks()[0], [str(int(x)) + r'\%' for x in plt.yticks()[0]])
 
                 plt.legend(loc='upper left')
-                plt.savefig(os.path.join(data_dir, '%s_%s_%s_%s-%s.pdf' % (str(datetime.date.today()), str(n_items), rew[1],env_name, reward_func)), bbox_inches='tight')
+                plt.savefig(os.path.join(data_dir, '%s_nitems_%s_%s_%s-%s.pdf' % (str(datetime.date.today()), str(n_items), rew[1], env_name, reward_func)), bbox_inches='tight')
                 #plt.show()
