@@ -33,7 +33,7 @@ mpl.rc('text', usetex=True)
 
 data_dir = os.path.join('.', 'data')
 
-n_steps = 200
+n_steps = 10
 n_items = 30
 const_delay = 5
 discount = 0.99
@@ -1077,12 +1077,14 @@ N_items = [15, 30]
 Rew_functions = [('likelihood', 'log_likelihood'),('likelihood', 'average_sample_outcome_all')]
 
 for n_items in N_items:
+    n_items = N_items[0]
     env_kwargs = {
       'n_items': n_items, 'n_steps': n_steps, 'discount': discount,
       'sample_delay': sample_const_delay(const_delay)
     }
 
     for rew in Rew_functions:
+        #rew = Rew_functions[0]
         reward_funcs = [rew[0], rew[1]]
         print('no. of items :- '+str(n_items))
         print('reward function other than likelihood :- '+rew[1])
@@ -1137,18 +1139,18 @@ for n_items in N_items:
           'rewards': R
         }
         print(str(n_items))
-        print(str(datetime.date.today())+str(n_items)+rew[1]+'_reward_logs.pkl')
-        reward_file_name = str(datetime.date.today()) + str(n_items) + rew[1] + '_reward_logs.pkl'
+        print(str(datetime.date.today())+'#'+str(n_items)+rew[1]+'_reward_logs.pkl')
+        reward_file_name = str(datetime.date.today()) + '#' + str(n_items) + rew[1] + '_reward_logs.pkl'
         with open(os.path.join(data_dir, reward_file_name), 'wb') as f:
           pickle.dump(reward_logs, f, pickle.HIGHEST_PROTOCOL)
 
-        # R = np.zeros((6, len(tutor_builders), n_eps, n_reps))
-        # for i in range(6):
-        #   #with open(os.path.join(data_dir, reward_file+'.%d' % i), 'rb') as f:
-        #   with open(os.path.join(data_dir, reward_file_name), 'rb') as f:
-        #     reward_logs = pickle.load(f)
-        #     R[i] = reward_logs['rewards'][i]
-        #     print(reward_logs['env_names'], reward_logs['reward_funcs'])
+        R = np.zeros((6, len(tutor_builders), n_eps, n_reps))
+        for i in range(6):
+          #with open(os.path.join(data_dir, reward_file+'.%d' % i), 'rb') as f:
+          with open(os.path.join(data_dir, reward_file_name), 'rb') as f:
+            reward_logs = pickle.load(f)
+            R[i] = reward_logs['rewards'][i]
+            print(reward_logs['env_names'], reward_logs['reward_funcs'])
 
         for i in range(R.shape[0]):
           for j in range(R.shape[3]):
@@ -1202,5 +1204,6 @@ for n_items in N_items:
                 plt.yticks(plt.yticks()[0], [str(int(x)) + r'\%' for x in plt.yticks()[0]])
 
                 plt.legend(loc='upper left')
-                plt.savefig(os.path.join(data_dir, '%s_nitems_%s_%s_%s-%s.pdf' % (str(datetime.date.today()), str(n_items), rew[1], env_name, reward_func)), bbox_inches='tight')
+                plt.savefig(os.path.join(data_dir, '%s_nitems_%s_%s_%s-%s.pdf' % (str(datetime.date.today()), str(n_items), rew[0]+rew[1], env_name, reward_func)), bbox_inches='tight')
                 #plt.show()
+                plt.clf()
