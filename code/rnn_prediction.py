@@ -4,8 +4,56 @@ import numpy as np
 import keras
 import keras.backend as K
 
-# This just needs to be a large numer (it's ok if exercises == 15)
 N_EXERCISES = 30
+
+def state_model(embed_dim=20, n_lstm_units=20, n_exercises=30):
+    n_categories = (n_exercises)*(2) + 1
+
+    exercise = keras.layers.Input((None, ))
+    last_exercise_x_correct = keras.layers.Input((None, ))
+    last_correct = keras.layers.Input((None, ))
+
+    initial_state_1 = keras.layers.Input((n_lstm_units, ))
+    initial_state_2 = keras.layers.Input((n_lstm_units, ))
+
+    embeddings = []
+    for inp in [exercise, last_exercise_x_correct, last_correct]:
+        # Look up 'embedding vector' for input
+        emb = keras.layers.Embedding(
+            n_categories,
+            embed_dim
+        )(exercise)
+        embeddings.append(emb)
+
+    # Concatenate all input
+    emb = keras.layers.concatenate(embeddings)
+
+    lstm = keras.layers.recurrent.LSTM(
+        n_lstm_units, return_sequences=True, return_state=True
+    )
+
+    # Feed input to lstm
+    lstm_output, s1, s2 = lstm(emb, initial_state=[initial_state_1, initial_state_2])
+
+    logit = keras.layers.TimeDistributed(
+                keras.layers.Dense(1)
+            )(lstm_output)
+
+    p = keras.layers.TimeDistributed(
+                keras.layers.Activation('sigmoid')
+            )(logit)
+
+    inputs = [exercise, last_exercise_x_correct, last_correct, initial_state_1, initial_state_2]
+    outputs = [p, s1, s2]
+
+    m = keras.models.Model(inputs=inputs, outputs=outputs)
+
+    optimizer = keras.optimizers.Adam()
+
+    m.compile(optimizer, 'binary_crossentropy', metrics=['acc', 'mse'])
+
+    return m
+
 
 def model():
     n_categories = (N_EXERCISES)*(2) + 1
@@ -61,6 +109,7 @@ def model():
 
     return m
 
+
 fn = '/Users/anton/Downloads/15items_200steps_history.pkl'
 
 with open(fn, 'rb') as f:
@@ -104,9 +153,31 @@ def process(data):
 x, y = process(tutor_data[:dev_split])
 x_dev, y_dev = process(tutor_data[dev_split:])
 
-m = model()
 
-m.fit(x, y, validation_data=[x_dev, y_dev], batch_size=32, epochs=10)
+path = '/Users/anton/Downloads/0001-0.70.h5'
+old_model = model()
+old_model.load_weights(path)
 
-print('Majority class:', y.mean(), y_dev.mean())
+model = state_model()
+
+i = 0
+for l1 in old_model.layers:
+    if str(type(l1)) ==  "<class 'keras.engine.topology.InputLayer'>":
+        continue
+
+    while str(type(model.layers[i])) ==  "<class 'keras.engine.topology.InputLayer'>":
+        i += 1
+
+    model.layers[i].set_weights(l1.get_weights())
+    i += 1
+
+batch_size = 1
+s1 = np.zeros([batch_size, 20])
+s2 = np.zeros([batch_size, 20])
+
+x1 = [xx[:1] for xx in x]
+x2 = [xx[:1] for xx in x] + [s1, s2]
+
+print(old_model.predict(x1))
+print(model.predict(x2))
 
